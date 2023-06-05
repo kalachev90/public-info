@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class AuditServiceImpl implements AuditService {
     @Override
     @Transactional(readOnly = true)
     public Audit getAuditById(Long id) {
-        return auditRepository.findById(id).orElse(null);
+        return auditRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Audit с идентификатором " + id + " не найден"));
     }
 
     @Override

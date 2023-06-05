@@ -1,8 +1,17 @@
 package com.bank.publicinfo.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "certificate")
 public class Certificate {
@@ -15,38 +24,6 @@ public class Certificate {
     private Byte photo;
 
     @ManyToOne
-    @JoinColumn(name = "bank_details_id", referencedColumnName = "id")
+    @JoinColumn(name = "bank_details_id", referencedColumnName = "id", nullable = false)
     private BankDetails certificate;
-
-    public Certificate() {
-    }
-
-    public Certificate(Byte photo, BankDetails certificate) {
-        this.photo = photo;
-        this.certificate = certificate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public byte getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(Byte photo) {
-        this.photo = photo;
-    }
-
-    public BankDetails getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(BankDetails certificate) {
-        this.certificate = certificate;
-    }
 }

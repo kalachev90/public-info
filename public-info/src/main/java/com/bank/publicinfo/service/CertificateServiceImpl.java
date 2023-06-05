@@ -3,6 +3,7 @@ package com.bank.publicinfo.service;
 import com.bank.publicinfo.entity.Certificate;
 import com.bank.publicinfo.repository.CertificateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional(readOnly = true)
     public Certificate getCertificateById(Long id) {
-        return certificateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Certificate with id " + id + "not found"));
+        return certificateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Certificate с идентификатором " + id + " не найден"));
     }
 
     @Override
@@ -43,6 +44,10 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public void deleteCertificate(Long id) {
-        certificateRepository.deleteById(id);
+        try {
+            certificateRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Certificate с идентификатором " + id + " не найден");
+        }
     }
 }

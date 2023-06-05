@@ -3,6 +3,7 @@ package com.bank.publicinfo.service;
 import com.bank.publicinfo.entity.Atm;
 import com.bank.publicinfo.repository.AtmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class AtmServiceImpl implements AtmService {
     @Override
     @Transactional(readOnly = true)
     public Atm getAtmById(Long id) {
-        return atmRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Atm with id " + id + "not found"));
+        return atmRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Atm с идентификатором " + id + " не найден"));
     }
 
     @Override
@@ -43,6 +44,10 @@ public class AtmServiceImpl implements AtmService {
 
     @Override
     public void deleteAtm(Long id) {
-        atmRepository.deleteById(id);
+        try {
+            atmRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Atm с идентификатором " + id + " не найден");
+        }
     }
 }

@@ -3,7 +3,9 @@ package com.bank.publicinfo.controller;
 import com.bank.publicinfo.dto.AtmDTO;
 import com.bank.publicinfo.entity.Atm;
 import com.bank.publicinfo.service.AtmService;
-import org.modelmapper.ModelMapper;
+import com.bank.publicinfo.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,59 +18,59 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/atm")
+@Tag(name="Банкоматы", description="Работа с банкоматами")
 public class AtmController {
     private final Logger logger = LoggerFactory.getLogger(AtmController.class);
     private final AtmService atmService;
-    private final ModelMapper modelMapper;
+    private final Mapper mapper = new Mapper();
 
     @Autowired
-    public AtmController(AtmService atmService, ModelMapper modelMapper) {
+    public AtmController(AtmService atmService) {
         this.atmService = atmService;
-        this.modelMapper = modelMapper;
     }
 
     @GetMapping
+    @Operation(summary = "Получение списка всех банкоматов", description = "Позволяет получить список всех банкоматов")
     public List<AtmDTO> getAllAtms() {
-        logger.info("Received request to get all atms.");
+        logger.info("Получен запрос на получение всех Atms");
         List<Atm> atms = atmService.getAllAtms();
-        logger.info("Returning {} atms.", atms.size());
-        return atms.stream().map(this::convertToAtmDTO).collect(Collectors.toList());
+        logger.info("Возвращающие {} Atms", atms.size());
+        return atms.stream().map(mapper::convertToAtmDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Получение одного банкомата", description = "Позволяет получить информацию об одном банкомате")
     public AtmDTO getAtmById(@PathVariable("id") Long id) {
-        logger.info("Received request to get atm with id {}.", id);
+        logger.info("Получен запрос на получение Atm с идентификатором {}", id);
         Atm atm = atmService.getAtmById(id);
-        logger.info("Returning atm with id {}.", id);
-        return convertToAtmDTO(atm);
+        logger.info("Возвращающий Atm с идентификатором {}", id);
+        return mapper.convertToAtmDTO(atm);
     }
 
     @PostMapping
-    public ResponseEntity<AtmDTO> createAtm(@RequestBody AtmDTO atmDTO) {
-        logger.info("Received request to create atm with data {}", atmDTO);
-        atmService.createAtm(convertToAtm(atmDTO));
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @Operation(summary = "Создание новой записи", description = "Позволяет добавить новую запись банкомата")
+    public Atm createAtm(@RequestBody AtmDTO atmDTO) {
+        Atm atm = mapper.convertToAtm(atmDTO);
+        logger.info("Получен запрос на создание нового Atm");
+        atmService.createAtm(atm);
+        return atm;
     }
 
-    @PutMapping
-    public ResponseEntity<AtmDTO> updateAtm(@RequestBody AtmDTO atmDTO) {
-        logger.info("Received request to update atm with id {} and data {}", atmDTO);
-        atmService.updateAtm(convertToAtm(atmDTO));
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PutMapping("/{id}")
+    @Operation(summary = "Обновление существующей записи", description = "Позволяет обновить существующую запись банкомата")
+    public Atm updateAtm(@PathVariable("id") Long id, @RequestBody AtmDTO atmDTO) {
+        Atm atm = mapper.convertToAtm(atmDTO);
+        atm.setId(id);
+        logger.info("Получен запрос на обновление Atm с идентификатором {}", id);
+        atmService.updateAtm(atm);
+        return atm;
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Удаление записи", description = "Позволяет удалить существующую запись банкомата")
     public ResponseEntity<HttpStatus> deleteAtm(@PathVariable("id") Long id) {
-        logger.info("Received request to delete atm with id {}", id);
+        logger.info("Получен запрос на удаление Atm с идентификатором {}", id);
         atmService.deleteAtm(id);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private Atm convertToAtm(AtmDTO atmDTO) {
-        return modelMapper.map(atmDTO, Atm.class);
-    }
-
-    private AtmDTO convertToAtmDTO(Atm atm) {
-        return modelMapper.map(atm, AtmDTO.class);
     }
 }

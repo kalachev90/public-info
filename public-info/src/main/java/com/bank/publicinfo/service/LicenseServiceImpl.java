@@ -3,6 +3,7 @@ package com.bank.publicinfo.service;
 import com.bank.publicinfo.entity.License;
 import com.bank.publicinfo.repository.LicenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class LicenseServiceImpl implements LicenseService {
     @Override
     @Transactional(readOnly = true)
     public License getLicenseById(Long id) {
-        return licenseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("License with id " + id + "not found"));
+        return licenseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("License с идентификатором " + id + " не найден"));
     }
 
     @Override
@@ -43,6 +44,10 @@ public class LicenseServiceImpl implements LicenseService {
 
     @Override
     public void deleteLicense(Long id) {
-        licenseRepository.deleteById(id);
+        try {
+            licenseRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("License с идентификатором " + id + " не найден");
+        }
     }
 }

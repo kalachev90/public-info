@@ -3,7 +3,9 @@ package com.bank.publicinfo.controller;
 import com.bank.publicinfo.dto.BranchDTO;
 import com.bank.publicinfo.entity.Branch;
 import com.bank.publicinfo.service.BranchService;
-import org.modelmapper.ModelMapper;
+import com.bank.publicinfo.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,59 +18,59 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/branch")
+@Tag(name="Отделения банка", description="Работа с отделениями банка")
 public class BranchController {
     private final Logger logger = LoggerFactory.getLogger(BranchController.class);
     private final BranchService branchService;
-    private final ModelMapper modelMapper;
+    private final Mapper mapper = new Mapper();
 
     @Autowired
-    public BranchController(BranchService branchService, ModelMapper modelMapper) {
+    public BranchController(BranchService branchService) {
         this.branchService = branchService;
-        this.modelMapper = modelMapper;
     }
 
     @GetMapping
+    @Operation(summary = "Получение списка всех отделений банка", description = "Позволяет получить список всех отделений банка")
     public List<BranchDTO> getAllBranchs() {
-        logger.info("Received request to get all branchs.");
+        logger.info("Получен запрос на получение всех Branchs");
         List<Branch> branches = branchService.getAllBranch();
-        logger.info("Returning {} branchs.", branches.size());
-        return branches.stream().map(this::convertToBranchDTO).collect(Collectors.toList());
+        logger.info("Возвращающие {} Branchs", branches.size());
+        return branches.stream().map(mapper::convertToBranchDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Получение одного отделения банка", description = "Позволяет получить информацию об одном отделении банка")
     public BranchDTO getBranchById(@PathVariable("id") Long id) {
-        logger.info("Received request to get branch with id {}.", id);
+        logger.info("Получен запрос на получение Branch с идентификатором {}", id);
         Branch branch = branchService.getBranchById(id);
-        logger.info("Returning branch with id {}.", id);
-        return convertToBranchDTO(branch);
+        logger.info("Возвращающая Branch с идентификатором {}.", id);
+        return mapper.convertToBranchDTO(branch);
     }
 
     @PostMapping
-    public ResponseEntity<BranchDTO> createBranch(@RequestBody BranchDTO branchDTO) {
-        logger.info("Received request to create branch with data {}", branchDTO);
-        branchService.createBranch(convertToBranch(branchDTO));
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @Operation(summary = "Добавление нового отделения банка", description = "Позволяет добавить новое отдедение банка")
+    public Branch createBranch(@RequestBody BranchDTO branchDTO) {
+        Branch branch = mapper.convertToBranch(branchDTO);
+        logger.info("Получен запрос на создание нового Branch");
+        branchService.createBranch(branch);
+        return branch;
     }
 
-    @PutMapping
-    public ResponseEntity<BranchDTO> updateBranch(@RequestBody BranchDTO branchDTO) {
-        logger.info("Received request to update branch with id {} and data {}", branchDTO);
-        branchService.updateBranch(convertToBranch(branchDTO));
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PutMapping("/{id}")
+    @Operation(summary = "Обновление существующего отделения банка", description = "Позволяет обновить существующее отделение банка")
+    public Branch updateBranch(@PathVariable("id") Long id, @RequestBody BranchDTO branchDTO) {
+        Branch branch = mapper.convertToBranch(branchDTO);
+        branch.setId(id);
+        logger.info("Получен запрос на обновление Branch с идентификатором {}", id);
+        branchService.updateBranch(branch);
+        return branch;
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Удаление отделения банка", description = "Позволяет удалить отделение банка")
     public ResponseEntity<HttpStatus> deleteBranch(@PathVariable("id") Long id) {
-        logger.info("Received request to delete branch with id {}", id);
+        logger.info("Получен запрос на удаление Branch с идентификатором {}", id);
         branchService.deleteBranch(id);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private Branch convertToBranch(BranchDTO branchDTO) {
-        return modelMapper.map(branchDTO, Branch.class);
-    }
-
-    private BranchDTO convertToBranchDTO(Branch branch) {
-        return modelMapper.map(branch, BranchDTO.class);
     }
 }

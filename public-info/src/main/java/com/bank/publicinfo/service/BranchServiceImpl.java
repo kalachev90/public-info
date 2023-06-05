@@ -4,6 +4,7 @@ import com.bank.publicinfo.entity.Branch;
 import com.bank.publicinfo.repository.AtmRepository;
 import com.bank.publicinfo.repository.BranchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class BranchServiceImpl implements BranchService {
     @Override
     @Transactional(readOnly = true)
     public Branch getBranchById(Long id) {
-        return branchRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Branch with id " + id + "not found"));
+        return branchRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Branch с идентификатором " + id + " не найден"));
     }
 
     @Override
@@ -46,6 +47,10 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public void deleteBranch(Long id) {
-        branchRepository.deleteById(id);
+        try {
+            branchRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Branch с идентификатором " + id + " не найден");
+        }
     }
 }

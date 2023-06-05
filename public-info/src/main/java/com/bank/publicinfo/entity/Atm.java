@@ -1,11 +1,20 @@
 package com.bank.publicinfo.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.sql.Time;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "atm")
 public class Atm {
@@ -31,63 +40,4 @@ public class Atm {
     @ManyToOne
     @JoinColumn(name = "branch_id", referencedColumnName = "id")
     private Branch atm;
-
-    public Atm() {
-    }
-
-    public Atm(String address, Time startOfWork, Time endOfWork, Boolean allHours, Branch atm) {
-        this.address = address;
-        this.startOfWork = startOfWork;
-        this.endOfWork = endOfWork;
-        this.allHours = allHours;
-        this.atm = atm;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Time getStartOfWork() {
-        return startOfWork;
-    }
-
-    public void setStartOfWork(Time startOfWork) {
-        this.startOfWork = startOfWork;
-    }
-
-    public Time getEndOfWork() {
-        return endOfWork;
-    }
-
-    public void setEndOfWork(Time endOfWork) {
-        this.endOfWork = endOfWork;
-    }
-
-    public Boolean getAllHours() {
-        return allHours;
-    }
-
-    public void setAllHours(Boolean allHours) {
-        this.allHours = allHours;
-    }
-
-    public Branch getAtm() {
-        return atm;
-    }
-
-    public void setAtm(Branch atm) {
-        this.atm = atm;
-    }
 }
