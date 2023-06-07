@@ -6,7 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -40,10 +40,10 @@ public class Audit {
 
     @NotEmpty(message = "Fill in the field")
     @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "modified_at")
-    private Timestamp modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @Column(name = "new_entity_json")
     private String newEntityJson;
@@ -51,4 +51,11 @@ public class Audit {
     @NotBlank(message = "Fill in the field")
     @Column(name = "entity_json", nullable = false)
     private String entityJson;
+
+    @OneToOne(mappedBy = "audit")
+    private RevInfo revInfo;
+
+    public void setRevInfo(RevInfo revInfo) {
+        this.revInfo = revInfo;
+    }
 }

@@ -6,8 +6,7 @@ import com.bank.publicinfo.service.AtmService;
 import com.bank.publicinfo.util.Mapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/atm")
 @Tag(name="Банкоматы", description="Работа с банкоматами")
 public class AtmController {
-    private final Logger logger = LoggerFactory.getLogger(AtmController.class);
     private final AtmService atmService;
     private final Mapper mapper = new Mapper();
 
@@ -32,18 +31,18 @@ public class AtmController {
     @GetMapping
     @Operation(summary = "Получение списка всех банкоматов", description = "Позволяет получить список всех банкоматов")
     public List<AtmDTO> getAllAtms() {
-        logger.info("Получен запрос на получение всех Atms");
+        log.info("Получен запрос на получение всех Atms");
         List<Atm> atms = atmService.getAllAtms();
-        logger.info("Возвращающие {} Atms", atms.size());
+        log.info("Возвращающие {} Atms", atms.size());
         return atms.stream().map(mapper::convertToAtmDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение одного банкомата", description = "Позволяет получить информацию об одном банкомате")
     public AtmDTO getAtmById(@PathVariable("id") Long id) {
-        logger.info("Получен запрос на получение Atm с идентификатором {}", id);
+        log.info("Получен запрос на получение Atm с идентификатором {}", id);
         Atm atm = atmService.getAtmById(id);
-        logger.info("Возвращающий Atm с идентификатором {}", id);
+        log.info("Возвращающий Atm с идентификатором {}", id);
         return mapper.convertToAtmDTO(atm);
     }
 
@@ -51,7 +50,7 @@ public class AtmController {
     @Operation(summary = "Создание новой записи", description = "Позволяет добавить новую запись банкомата")
     public Atm createAtm(@RequestBody AtmDTO atmDTO) {
         Atm atm = mapper.convertToAtm(atmDTO);
-        logger.info("Получен запрос на создание нового Atm");
+        log.info("Получен запрос на создание нового Atm");
         atmService.createAtm(atm);
         return atm;
     }
@@ -61,7 +60,7 @@ public class AtmController {
     public Atm updateAtm(@PathVariable("id") Long id, @RequestBody AtmDTO atmDTO) {
         Atm atm = mapper.convertToAtm(atmDTO);
         atm.setId(id);
-        logger.info("Получен запрос на обновление Atm с идентификатором {}", id);
+        log.info("Получен запрос на обновление Atm с идентификатором {}", id);
         atmService.updateAtm(atm);
         return atm;
     }
@@ -69,7 +68,7 @@ public class AtmController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление записи", description = "Позволяет удалить существующую запись банкомата")
     public ResponseEntity<HttpStatus> deleteAtm(@PathVariable("id") Long id) {
-        logger.info("Получен запрос на удаление Atm с идентификатором {}", id);
+        log.info("Получен запрос на удаление Atm с идентификатором {}", id);
         atmService.deleteAtm(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }

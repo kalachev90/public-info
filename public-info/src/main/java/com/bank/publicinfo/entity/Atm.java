@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +17,8 @@ import java.sql.Time;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
+@AuditTable(value = "atm_aud", schema = "public")
 @Entity
 @Table(name = "atm")
 public class Atm {

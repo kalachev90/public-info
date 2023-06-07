@@ -6,8 +6,7 @@ import com.bank.publicinfo.service.CertificateService;
 import com.bank.publicinfo.util.Mapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/certificate")
 @Tag(name="Сертификаты банка", description="Работа с сертификатами банка")
 public class CertificateController {
-    private final Logger logger = LoggerFactory.getLogger(CertificateController.class);
     private final CertificateService certificateService;
     private final Mapper mapper = new Mapper();
 
@@ -32,18 +31,18 @@ public class CertificateController {
     @GetMapping
     @Operation(summary = "Получение списка всех сертификатов", description = "Позволяет получить список всех сертификатов")
     public List<CertificateDTO> getAllCertificates() {
-        logger.info("Получен запрос на получение всех Certificates");
+        log.info("Получен запрос на получение всех Certificates");
         List<Certificate> certificates = certificateService.getAllCertificate();
-        logger.info("Возвращающий {} Certificates", certificates.size());
+        log.info("Возвращающий {} Certificates", certificates.size());
         return certificates.stream().map(mapper::convertToCertificateDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение одного сертификата", description = "Позволяет получить один сертификат")
     public CertificateDTO getCertificateById(@PathVariable("id") Long id) {
-        logger.info("Получен запрос на получение Certificate с идентификатором {}", id);
+        log.info("Получен запрос на получение Certificate с идентификатором {}", id);
         Certificate certificate = certificateService.getCertificateById(id);
-        logger.info("Возвращающий сертификат с Certificate {}", id);
+        log.info("Возвращающий сертификат с Certificate {}", id);
         return mapper.convertToCertificateDTO(certificate);
     }
 
@@ -51,7 +50,7 @@ public class CertificateController {
     @Operation(summary = "Добавление нового сертификата", description = "Позволяет добавить новый сертификат")
     public Certificate createCertificate(@RequestBody CertificateDTO certificateDTO) {
         Certificate certificate = mapper.convertToCertificate(certificateDTO);
-        logger.info("Получен запрос на создание нового Certificate");
+        log.info("Получен запрос на создание нового Certificate");
         certificateService.createCertificate(certificate);
         return certificate;
     }
@@ -61,7 +60,7 @@ public class CertificateController {
     public Certificate updateCertificate(@PathVariable("id") Long id, @RequestBody CertificateDTO certificateDTO) {
         Certificate certificate = mapper.convertToCertificate(certificateDTO);
         certificate.setId(id);
-        logger.info("Получен запрос на обновление Certificate с идентификатором {}", id);
+        log.info("Получен запрос на обновление Certificate с идентификатором {}", id);
         certificateService.updateCertificate(certificate);
         return certificate;
     }
@@ -69,7 +68,7 @@ public class CertificateController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление сертификата", description = "Позволяет удалить сертификат")
     public ResponseEntity<HttpStatus> deleteCertificate(@PathVariable("id") Long id) {
-        logger.info("Получен запрос на удаление Certificate с идентификатором {}", id);
+        log.info("Получен запрос на удаление Certificate с идентификатором {}", id);
         certificateService.deleteCertificate(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }

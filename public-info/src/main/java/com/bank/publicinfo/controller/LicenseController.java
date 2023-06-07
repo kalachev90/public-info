@@ -6,8 +6,7 @@ import com.bank.publicinfo.service.LicenseService;
 import com.bank.publicinfo.util.Mapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/license")
 @Tag(name="Лицензии банка", description="Работа с лизензиями банка")
 public class LicenseController {
-    private final Logger logger = LoggerFactory.getLogger(LicenseController.class);
     private final LicenseService licenseService;
     private final Mapper mapper = new Mapper();
 
@@ -32,18 +31,18 @@ public class LicenseController {
     @GetMapping
     @Operation(summary = "Получение списка всех лицензий", description = "Позволяет получить список всех лицензий")
     public List<LicenseDTO> getAllLicenses() {
-        logger.info("Получен запрос на получение всех Licenses");
+        log.info("Получен запрос на получение всех Licenses");
         List<License> licenses = licenseService.getAllLicense();
-        logger.info("Возвращаем {} Licenses", licenses.size());
+        log.info("Возвращаем {} Licenses", licenses.size());
         return licenses.stream().map(mapper::convertToLicenseDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение одной лицензии", description = "Позволяет получить одну лицензию")
     public LicenseDTO getLicenseById(@PathVariable("id") Long id) {
-        logger.info("Получен запрос на получение License с идентификатором {}", id);
+        log.info("Получен запрос на получение License с идентификатором {}", id);
         License license = licenseService.getLicenseById(id);
-        logger.info("Возвращаем License с идентификатором {}", id);
+        log.info("Возвращаем License с идентификатором {}", id);
         return mapper.convertToLicenseDTO(license);
     }
 
@@ -51,7 +50,7 @@ public class LicenseController {
     @Operation(summary = "Добавление новой лицензии", description = "Позволяет добавить новую лицензию")
     public License createLicense(@RequestBody LicenseDTO licenseDTO) {
         License license = mapper.convertToLicense(licenseDTO);
-        logger.info("Получен запрос на создание нового License");
+        log.info("Получен запрос на создание нового License");
         licenseService.createLicense(license);
         return license;
     }
@@ -61,7 +60,7 @@ public class LicenseController {
     public License updateLicense(@PathVariable("id") Long id, @RequestBody LicenseDTO licenseDTO) {
         License license = mapper.convertToLicense(licenseDTO);
         license.setId(id);
-        logger.info("Получен запрос на обновление License с идентификатором {}", id);
+        log.info("Получен запрос на обновление License с идентификатором {}", id);
         licenseService.updateLicense(license);
         return license;
     }
@@ -69,7 +68,7 @@ public class LicenseController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление лицензии", description = "Позволяет удалить лицензию")
     public ResponseEntity<HttpStatus> deleteLicense(@PathVariable("id") Long id) {
-        logger.info("Получен запрос на удаление License с идентификатором {}", id);
+        log.info("Получен запрос на удаление License с идентификатором {}", id);
         licenseService.deleteLicense(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
