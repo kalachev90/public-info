@@ -22,6 +22,9 @@ public class BankDetailsListener implements RevisionListener {
         AuditQuery auditQuery = AuditReaderFactory.get(entityManager).createQuery()
                 .forRevisionsOfEntity(BankDetails.class, false, true);
         List<Object[]> resultList = auditQuery.getResultList();
+        if (resultList.size() == 0) {
+            return;
+        }
         Object[] resultArr = resultList.get(resultList.size()-1);
         BankDetails bankDetails = (BankDetails) resultArr[0];
         RevInfo revInfo = (RevInfo) resultArr[1];
@@ -34,7 +37,7 @@ public class BankDetailsListener implements RevisionListener {
                 ZoneId.systemDefault());
         audit.setEntityType(bankDetails.getClass().getSimpleName());
         audit.setOperationType(revisionType.toString());
-        if (revisionType.toString().equals("MOD")) {
+        if (revisionType.toString() =="MOD") {
             audit.setNewEntityJson(bankDetails.toString());
             audit.setModifiedAt(zonedDateTimeOfRevision.toLocalDateTime());
             audit.setModifiedBy(revInfo.getUsername());
