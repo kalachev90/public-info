@@ -23,7 +23,7 @@ public class BankDetailsListener implements RevisionListener {
                 .forRevisionsOfEntity(BankDetails.class, false, true);
         List<Object[]> resultList = auditQuery.getResultList();
         Object[] resultArr = resultList.get(resultList.size()-1);
-        BankDetails modifyBankDetails = (BankDetails) resultArr[0];
+        BankDetails bankDetails = (BankDetails) resultArr[0];
         RevInfo revInfo = (RevInfo) resultArr[1];
         RevisionType revisionType = (RevisionType) resultArr[2];
         revInfo.setUsername("User");
@@ -32,15 +32,15 @@ public class BankDetailsListener implements RevisionListener {
 
         ZonedDateTime zonedDateTimeOfRevision = ZonedDateTime.ofInstant(Instant.ofEpochMilli(revInfo.getTimestamp()),
                 ZoneId.systemDefault());
-        audit.setEntityType(modifyBankDetails.getClass().getSimpleName());
+        audit.setEntityType(bankDetails.getClass().getSimpleName());
         audit.setOperationType(revisionType.toString());
         if (revisionType.toString().equals("MOD")) {
-            audit.setNewEntityJson(modifyBankDetails.toString());
+            audit.setNewEntityJson(bankDetails.toString());
             audit.setModifiedAt(zonedDateTimeOfRevision.toLocalDateTime());
             audit.setModifiedBy(revInfo.getUsername());
             audit.setEntityJson(resultList.get(resultList.size() - 2)[0].toString());
         } else {
-            audit.setEntityJson(modifyBankDetails.toString());
+            audit.setEntityJson(bankDetails.toString());
         }
         audit.setCreatedBy(revInfo.getUsername());
         audit.setCreatedAt(zonedDateTimeOfRevision.toLocalDateTime());

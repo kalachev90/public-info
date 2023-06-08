@@ -1,12 +1,10 @@
 package com.bank.publicinfo.audit;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public class BeanUtil implements ApplicationContextAware {
     private static ApplicationContext context;
@@ -14,12 +12,9 @@ public class BeanUtil implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         context = applicationContext;
-        log.info("Контекст успешно установлен BeanUtil.class");
     }
 
-    public static <T> T getBean(Class<T> beanClass) {
-        log.info("Получен бин указанного типа BeanUtil.class");
-        return context.getBean(beanClass);
+    public static <T> T getBean(Class<T> auditService) {
+        return context.getBean(auditService);
     }
-
 }
